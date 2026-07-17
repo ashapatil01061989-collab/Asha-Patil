@@ -1,0 +1,6 @@
+{
+  "name": "CareElite Clinic - Premium Multi-Specialty Doctor Web Portal",
+  "description": "A world-class, premium, and fully responsive Single Doctor Clinic Website Demo Template. Supports instant switching between 8 medical specialties to showcase clinical trust, services, scheduling, and patient reviews.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
