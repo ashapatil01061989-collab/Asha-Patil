@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { SpecialtyData } from "../data";
 import { ScrollReveal } from "./ScrollReveal";
-import { CalendarCheck, Phone, CheckCircle, MessageSquare, AlertCircle, X, ShieldCheck, Download, Printer, FileSpreadsheet } from "lucide-react";
+import { CalendarCheck, Phone, CheckCircle, MessageSquare, AlertCircle, X, ShieldCheck, Download, Printer } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import confetti from "canvas-confetti";
 import { jsPDF } from "jspdf";
-import { getAccessToken } from "../lib/googleAuth";
-import { appendAppointmentToSheet } from "../lib/googleSheets";
 
 interface BookingFormProps {
   specialty: SpecialtyData;
@@ -29,8 +27,6 @@ export const BookingForm: React.FC<BookingFormProps> = ({ specialty, isDarkMode 
   const [showSplash, setShowSplash] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [mockId, setMockId] = useState("");
-  const [isSynced, setIsSynced] = useState(false);
-  const [sheetUrl, setSheetUrl] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
@@ -351,33 +347,6 @@ _Generated securely via digital Clinic Desk Portal._`;
     if (shouldProceedWithSuccess) {
       setIsSubmitting(false);
       setMockId(generatedId);
-      setIsSynced(false);
-      setSheetUrl(null);
-
-      // Attempt Google Sheets Sync
-      try {
-        const token = await getAccessToken();
-        if (token) {
-          const syncRes = await appendAppointmentToSheet({
-            id: generatedId,
-            fullName: formData.fullName,
-            mobileNumber: formData.mobileNumber,
-            email: formData.email,
-            preferredDate: formData.preferredDate,
-            preferredTime: formData.preferredTime,
-            doctorName: specialty.doctorName,
-            specialtyName: specialty.clinicName,
-            isExisting: formData.isExisting,
-            reason: formData.reason,
-          });
-          if (syncRes.success) {
-            setIsSynced(true);
-            setSheetUrl(syncRes.url || null);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to sync appointment to Google Sheets automatically:", err);
-      }
 
       // Play the confetti celebration
       triggerConfetti();
@@ -796,28 +765,6 @@ _Generated securely via digital Clinic Desk Portal._`;
                   <span className="text-gray-400 font-semibold">Timing Block:</span>
                   <span className="font-bold line-clamp-1">{formData.preferredTime}</span>
                 </div>
-
-                {isSynced ? (
-                  <div className="mt-2.5 p-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 flex items-center justify-between text-xs font-bold text-emerald-700 dark:text-emerald-400">
-                    <span className="flex items-center gap-1.5">
-                      <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                      Google Sheet Record
-                    </span>
-                    <a
-                      href={sheetUrl || "#"}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline flex items-center gap-0.5 hover:text-emerald-500 font-extrabold uppercase text-[10px]"
-                    >
-                      View Sheet
-                    </a>
-                  </div>
-                ) : (
-                  <div className="mt-2 text-[10px] text-gray-450 dark:text-slate-400 font-medium bg-gray-50 dark:bg-slate-950 p-2 rounded-xl border border-dashed border-gray-200 dark:border-slate-800 flex items-center gap-1.5">
-                    <FileSpreadsheet className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                    <span>Clinic Owner: Click <b>Clinic Assistant</b> on bottom-right to connect Google Sheets for automatic booking records!</span>
-                  </div>
-                )}
 
                 <div className="h-px w-full bg-gray-100 dark:bg-slate-800 my-1" />
                 <div className="flex gap-2 items-start text-[10px] text-gray-400">
