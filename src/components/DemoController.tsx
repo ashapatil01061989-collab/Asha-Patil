@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { SPECIALTIES } from "../data";
-import { Moon, Sun, Sparkles, X, Check, HeartPulse } from "lucide-react";
+import { Moon, Sun, Sparkles, X, Check, HeartPulse, FileSpreadsheet, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { initAuth, googleSignIn, logout } from "../lib/googleAuth";
 
 interface DemoControllerProps {
   currentSpecialtyId: string;
@@ -18,6 +19,50 @@ export const DemoController: React.FC<DemoControllerProps> = ({
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [constraints, setConstraints] = useState({ left: -300, right: 0, top: -600, bottom: 0 });
+
+  const [user, setUser] = useState<any | null>(null);
+  const [sheetId, setSheetId] = useState<string | null>(null);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+  useEffect(() => {
+    // Listen to Auth State
+    const unsubscribe = initAuth(
+      (currentUser, token) => {
+        setUser(currentUser);
+        setSheetId(localStorage.getItem("clinical_appointments_spreadsheet_id"));
+      },
+      () => {
+        setUser(null);
+        setSheetId(null);
+      }
+    );
+    return () => unsubscribe();
+  }, [isMenuOpen]); // Also refresh when menu opens/closes to capture sheet updates
+
+  const handleLogin = async () => {
+    setIsAuthenticating(true);
+    try {
+      const res = await googleSignIn();
+      if (res) {
+        setUser(res.user);
+        setSheetId(localStorage.getItem("clinical_appointments_spreadsheet_id"));
+      }
+    } catch (err) {
+      console.error("Failed to authenticate with Google:", err);
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setUser(null);
+      setSheetId(null);
+    } catch (err) {
+      console.error("Failed to disconnect Google account:", err);
+    }
+  };
 
   // Dynamically calculate drag constraints relative to initial position (bottom-28 right-6)
   useEffect(() => {
@@ -129,7 +174,7 @@ export const DemoController: React.FC<DemoControllerProps> = ({
                 <span className="text-[9px] font-bold tracking-wider uppercase text-gray-400 dark:text-slate-500 block">
                   Select Demo Specialty
                 </span>
-                <div className="grid grid-cols-1 gap-1.5 max-h-[220px] overflow-y-auto pr-1 no-scrollbar">
+                <div className="grid grid-cols-1 gap-1.5 max-h-[160px] overflow-y-auto pr-1 no-scrollbar">
                   {SPECIALTIES.map((spec) => {
                     const isActive = spec.id === currentSpecialtyId;
                     return (
@@ -157,6 +202,58 @@ export const DemoController: React.FC<DemoControllerProps> = ({
                     );
                   })}
                 </div>
+              </div>
+
+              {/* Google Sheets Sync Integration (High-grade Clinic Feature) */}
+              <div className="border-t border-gray-100 dark:border-slate-800/60 pt-3 mb-3">
+                <span className="text-[9px] font-bold tracking-wider uppercase text-gray-400 dark:text-slate-500 block mb-1.5">
+                  Clinic Record Sync
+                </span>
+                {user ? (
+                  <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-2.5 flex flex-col gap-1.5 text-left">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-emerald-800 dark:text-emerald-400">
+                      <span className="flex items-center gap-1.5">
+                        <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                        Connected to Google
+                      </span>
+                      <button
+                        onClick={handleLogout}
+                        className="text-rose-600 hover:text-rose-700 text-[10px] font-bold flex items-center gap-0.5 cursor-pointer"
+                        title="Disconnect"
+                      >
+                        <LogOut className="w-3 h-3" />
+                        Disconnect
+                      </button>
+                    </div>
+                    <span className="text-[9px] text-gray-500 dark:text-slate-400 font-normal leading-relaxed">
+                      Signed in as <span className="font-semibold text-gray-700 dark:text-slate-200">{user.email}</span>. Booked appointments will automatically log to your Google Sheet.
+                    </span>
+                    {sheetId && (
+                      <a
+                        href={`https://docs.google.com/spreadsheets/d/${sheetId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-center text-[10px] py-1.5 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-700 dark:text-emerald-300 font-bold rounded-lg border border-emerald-500/30 transition-all cursor-pointer"
+                      >
+                        Open Google Sheet ↗
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-slate-50 dark:bg-slate-950/60 border border-gray-100 dark:border-slate-850 rounded-xl p-2.5 text-center">
+                    <p className="text-[10px] text-gray-500 dark:text-slate-400 mb-2 font-medium">
+                      Sync appointment bookings in real-time to your Google Sheets.
+                    </p>
+                    <button
+                      onClick={handleLogin}
+                      disabled={isAuthenticating}
+                      className="w-full flex items-center justify-center gap-1.5 py-1.5 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white font-bold text-[11px] rounded-lg shadow-sm cursor-pointer transition-all"
+                    >
+                      <FileSpreadsheet className="w-3.5 h-3.5" />
+                      <span>{isAuthenticating ? "Connecting Account..." : "Connect Google Sheet"}</span>
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Toggles Panel */}

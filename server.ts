@@ -19,12 +19,29 @@ function getTransporter() {
   if (transporter) return transporter;
 
   const host = process.env.SMTP_HOST || "smtp.gmail.com";
-  const port = parseInt(process.env.SMTP_PORT || "587");
+  const portVal = process.env.SMTP_PORT || "587";
+  const port = parseInt(portVal);
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
 
   if (!user || !pass) {
     console.warn("⚠️ SMTP_USER or SMTP_PASS environment variables are missing in your deployment environment (e.g. Nestify). Emails will be logged to the console instead of sent. Please configure them to enable real-time email delivery!");
+    return null;
+  }
+
+  // Detect placeholder credentials or hostname
+  const isPlaceholder = (val: string) => {
+    const v = val.trim().toLowerCase();
+    return (
+      v === "divesh" ||
+      v === "placeholder" ||
+      v.includes("your_") ||
+      v.includes("example.com")
+    );
+  };
+
+  if (isPlaceholder(host) || isPlaceholder(user) || isPlaceholder(pass) || !host.includes(".") || isNaN(port)) {
+    console.warn("⚠️ SMTP configuration contains placeholder values (e.g. 'Divesh' or missing domain suffix). Falling back to console-logging emails safely to prevent delivery failures.");
     return null;
   }
 
