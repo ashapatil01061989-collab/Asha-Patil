@@ -14,8 +14,10 @@ export const Hero: React.FC<HeroProps> = ({ specialty, onBookClick, isDarkMode }
   return (
     <section id="hero" className="relative overflow-hidden pt-28 pb-12 lg:pt-36 lg:pb-16">
       {/* Abstract Background Glows */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-sky-400/20 to-emerald-400/10 rounded-full blur-3xl -z-10 animate-glow-slow-1" />
-      <div className="absolute bottom-10 left-10 w-[300px] h-[300px] bg-gradient-to-tr from-emerald-400/10 to-sky-300/15 rounded-full blur-2xl -z-10 animate-glow-slow-2" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute top-0 right-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-gradient-to-br from-sky-400/20 to-emerald-400/10 rounded-full blur-3xl animate-glow-slow-1" />
+        <div className="absolute bottom-10 left-10 w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] bg-gradient-to-tr from-emerald-400/10 to-sky-300/15 rounded-full blur-2xl animate-glow-slow-2" />
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -144,7 +146,7 @@ export const Hero: React.FC<HeroProps> = ({ specialty, onBookClick, isDarkMode }
             </div>
 
             {/* Floating Trust Card 1: Rating */}
-            <div className={`absolute -top-4 -right-2 sm:-right-4 p-3 rounded-2xl shadow-xl border flex items-center gap-2.5 animate-float ${
+            <div className={`absolute -top-4 right-2 md:-right-4 p-3 rounded-2xl shadow-xl border flex items-center gap-2.5 animate-float ${
               isDarkMode ? "bg-slate-800 border-slate-700" : "bg-white border-sky-100"
             }`}>
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center border ${
@@ -163,7 +165,7 @@ export const Hero: React.FC<HeroProps> = ({ specialty, onBookClick, isDarkMode }
             </div>
 
             {/* Floating Trust Card 2: Patients */}
-            <div className={`absolute bottom-1/4 -left-2 sm:-left-6 p-3 rounded-2xl shadow-xl border flex items-center gap-2.5 animate-float ${
+            <div className={`absolute bottom-1/4 left-2 md:-left-6 p-3 rounded-2xl shadow-xl border flex items-center gap-2.5 animate-float ${
               isDarkMode ? "bg-slate-800 border-slate-700" : "bg-white border-sky-100"
             }`} style={{ animationDelay: "1.5s" }}>
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center border ${

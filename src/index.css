@@ -14,16 +14,27 @@
 }
 
 /* Custom Base Styles */
+html, body, #root {
+  overflow-x: clip !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  position: relative;
+  background-color: #fafafa;
+}
+
+html.dark, html.dark body, html.dark #root {
+  background-color: #020617 !important;
+}
+
 html {
   scroll-behavior: smooth;
   font-family: var(--font-sans);
-  background-color: #fafafa;
   color: #171717;
   -webkit-font-smoothing: antialiased;
 }
 
 body {
-  overflow-x: hidden;
+  overflow-x: clip !important;
 }
 
 /* Custom Scrollbar */

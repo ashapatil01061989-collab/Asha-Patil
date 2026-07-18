@@ -200,8 +200,8 @@ export const Navbar: React.FC<NavbarProps> = ({ specialty, onBookClick, isDarkMo
 
       {/* Mobile Fullscreen Navigation Overlay */}
       <div
-        className={`fixed inset-0 z-50 transition-all duration-500 lg:hidden ${
-          isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        className={`fixed inset-0 z-50 transition-all duration-500 lg:hidden overflow-hidden ${
+          isMobileMenuOpen ? "opacity-100 pointer-events-auto visible" : "opacity-0 pointer-events-none invisible"
         }`}
       >
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />

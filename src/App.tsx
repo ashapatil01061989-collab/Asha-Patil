@@ -144,6 +144,28 @@ export default function App() {
     };
   }, []);
 
+  // Sync dark class and background color to documentElement (html element), body, and root wrapper
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const root = document.documentElement;
+      const body = document.body;
+      const rootDiv = document.getElementById("root");
+      const bgColor = isDarkMode ? "#020617" : "#fafafa";
+      
+      if (isDarkMode) {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+      
+      root.style.backgroundColor = bgColor;
+      body.style.backgroundColor = bgColor;
+      if (rootDiv) {
+        rootDiv.style.backgroundColor = bgColor;
+      }
+    }
+  }, [isDarkMode]);
+
   const scrollToBooking = () => {
     const bookingSec = document.getElementById("booking-section");
     if (bookingSec) {
@@ -210,7 +232,7 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen relative font-sans transition-colors duration-300 ${
+    <div className={`min-h-screen w-full overflow-x-hidden relative font-sans transition-colors duration-300 ${
       isDarkMode ? "dark bg-slate-950 text-slate-100" : "bg-slate-50/50 text-gray-900"
     }`}>
 
@@ -262,7 +284,9 @@ export default function App() {
         isDarkMode ? "bg-slate-950 border-slate-900" : "bg-white border-gray-100"
       }`}>
         {/* Ambient background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gradient-to-r from-sky-400/5 to-emerald-400/5 rounded-full blur-3xl -z-10 animate-glow-slow-2" />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[600px] h-[150px] sm:h-[300px] bg-gradient-to-r from-sky-400/5 to-emerald-400/5 rounded-full blur-3xl animate-glow-slow-2" />
+        </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           

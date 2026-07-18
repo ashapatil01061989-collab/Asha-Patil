@@ -1,6 +1,20 @@
 import React from "react";
 import { motion } from "motion/react";
 
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = React.useState(false);
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return isMobile;
+};
+
 type AnimationVariant = "fade-up" | "fade-down" | "fade-left" | "fade-right" | "zoom-in" | "scale-up";
 
 interface ScrollRevealProps {
@@ -20,6 +34,7 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   className = "",
   once = true,
 }) => {
+  const isMobile = useIsMobile();
   const getVariants = () => {
     switch (variant) {
       case "fade-up":
@@ -34,13 +49,13 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
         };
       case "fade-left":
         return {
-          hidden: { opacity: 0, x: 30 },
-          visible: { opacity: 1, x: 0 },
+          hidden: { opacity: 0, y: 20 },
+          visible: { opacity: 1, y: 0 },
         };
       case "fade-right":
         return {
-          hidden: { opacity: 0, x: -30 },
-          visible: { opacity: 1, x: 0 },
+          hidden: { opacity: 0, y: 20 },
+          visible: { opacity: 1, y: 0 },
         };
       case "zoom-in":
         return {
@@ -123,6 +138,7 @@ export const StaggerItem: React.FC<StaggerItemProps> = ({
   className = "",
   onClick,
 }) => {
+  const isMobile = useIsMobile();
   const getVariants = () => {
     switch (variant) {
       case "fade-up":
@@ -137,13 +153,13 @@ export const StaggerItem: React.FC<StaggerItemProps> = ({
         };
       case "fade-left":
         return {
-          hidden: { opacity: 0, x: 20 },
-          visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.21, 1.02, 0.43, 1.01] } },
+          hidden: { opacity: 0, y: 15 },
+          visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.21, 1.02, 0.43, 1.01] } },
         };
       case "fade-right":
         return {
-          hidden: { opacity: 0, x: -20 },
-          visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.21, 1.02, 0.43, 1.01] } },
+          hidden: { opacity: 0, y: 15 },
+          visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.21, 1.02, 0.43, 1.01] } },
         };
       case "zoom-in":
         return {

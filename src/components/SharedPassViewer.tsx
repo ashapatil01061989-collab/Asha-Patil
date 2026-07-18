@@ -380,7 +380,7 @@ _Check-in Gate Entry Approved. Signature Verified Online._`;
   };
 
   return (
-    <div id="shared-pass-root" className={`min-h-screen font-sans transition-colors duration-300 relative ${
+    <div id="shared-pass-root" className={`min-h-screen w-full overflow-x-hidden font-sans transition-colors duration-300 relative ${
       isDarkMode 
         ? "dark bg-[#090d16] text-slate-100" 
         : "bg-gradient-to-tr from-slate-50 via-sky-50/30 to-emerald-50/20 text-slate-850"
